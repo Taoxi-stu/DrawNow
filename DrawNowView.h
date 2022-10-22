@@ -17,6 +17,12 @@ public:
 
 // 操作
 public:
+	int m_PenSize;//画笔粗细
+	COLORREF m_PenColor, m_BrushColor;//笔刷颜色。填充颜色
+	CPoint m_PointBegin, m_PointEnd;//绘图起点，绘图终点
+	enum class DrawType {
+		Point, LineSegment, Circle, Rectangle, Polygen, Ellips, FreeFrom
+	}m_DrawType;
 
 // 重写
 public:
@@ -40,6 +46,10 @@ protected:
 // 生成的消息映射函数
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // DrawNowView.cpp 中的调试版本

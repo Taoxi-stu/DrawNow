@@ -13,6 +13,7 @@
 #include "DrawNowDoc.h"
 #include "DrawNowView.h"
 
+#include "Resource.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -27,6 +28,9 @@ BEGIN_MESSAGE_MAP(CDrawNowView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // CDrawNowView 构造/析构
@@ -34,6 +38,13 @@ END_MESSAGE_MAP()
 CDrawNowView::CDrawNowView() noexcept
 {
 	// TODO: 在此处添加构造代码
+
+	m_PenSize = 1;
+	m_PenColor = RGB(0, 0, 0);
+	m_BrushColor = RGB(0, 0, 0);
+	m_PointBegin = CPoint(0, 0);
+	m_PointEnd = CPoint(0, 0);
+	m_DrawType = DrawType::Rectangle;
 
 }
 
@@ -103,3 +114,83 @@ CDrawNowDoc* CDrawNowView::GetDocument() const // 非调试版本是内联的
 
 
 // CDrawNowView 消息处理程序
+
+
+void CDrawNowView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	m_PointBegin = m_PointEnd = point;
+	CClientDC dc(this);
+	switch (m_DrawType)  {
+	case DrawType::Point :
+	case DrawType::LineSegment:
+	case DrawType::Rectangle:
+		dc.MoveTo(m_PointBegin);
+		dc.LineTo(point);
+		break;
+	}
+
+	CView::OnLButtonDown(nFlags, point);
+}
+
+
+void CDrawNowView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	CClientDC dc(this);
+	switch (m_DrawType) {
+	case DrawType::Point:
+		break;
+	case DrawType::LineSegment:
+		dc.SetROP2(R2_COPYPEN); // 异或的方式清除上次画笔
+		dc.MoveTo(m_PointBegin);
+		dc.LineTo(point);
+		break;
+	case DrawType::Rectangle: {
+		dc.SetROP2(R2_COPYPEN); // 异或的方式清除上次画笔
+		CRect rectTmp2(m_PointBegin, point);
+		dc.Rectangle(rectTmp2);
+		break;
+	}
+	default:
+		break;
+	}
+
+	CView::OnLButtonUp(nFlags, point);
+}
+
+
+void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	CClientDC dc(this);
+	if (nFlags & MK_LBUTTON) {
+		switch (m_DrawType) {
+		case DrawType::LineSegment:
+			dc.SetROP2(R2_NOTXORPEN); // 异或的方式清除上次画笔
+			dc.MoveTo(m_PointBegin);
+			dc.LineTo(m_PointEnd);
+			// 画本次图形
+			dc.MoveTo(m_PointBegin);
+			dc.LineTo(point);
+			m_PointEnd = point;
+			break;
+		case DrawType::Rectangle: {
+			dc.SetROP2(R2_NOTXORPEN); // 异或的方式清除上次画笔
+			dc.MoveTo(m_PointBegin);
+			CRect rectTmp1(m_PointBegin, m_PointEnd);
+			dc.Rectangle(rectTmp1);
+			// 画本次图形
+			//dc.SetROP2(R2_COPYPEN);
+			CRect rectTmp2(m_PointBegin, point);
+			dc.Rectangle(rectTmp2);
+			m_PointEnd = point;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	CView::OnMouseMove(nFlags, point);
+}
