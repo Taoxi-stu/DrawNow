@@ -12,7 +12,7 @@
 
 #include "DrawNowDoc.h"
 #include "DrawNowView.h"
-
+#include "CSetting.h"
 #include "Resource.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CDrawNowView, CView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_COMMAND(ID_32771, &CDrawNowView::OnSetting)
 END_MESSAGE_MAP()
 
 // CDrawNowView 构造/析构
@@ -228,4 +229,14 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 	CView::OnMouseMove(nFlags, point);
+}
+
+
+void CDrawNowView::OnSetting()
+{
+	// TODO: 在此添加命令处理程序代码
+	m_CDlgSet.Create(IDD_Setting, this);
+	m_CDlgSet.ShowWindow(SW_SHOW);
+	m_CDlgSet.SetActiveWindow();
+
 }

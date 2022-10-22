@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CSetting.h" />
     <ClInclude Include="DrawNow.h" />
     <ClInclude Include="DrawNowDoc.h" />
     <ClInclude Include="DrawNowView.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSetting.cpp" />
     <ClCompile Include="DrawNow.cpp" />
     <ClCompile Include="DrawNowDoc.cpp" />
     <ClCompile Include="DrawNowView.cpp" />
