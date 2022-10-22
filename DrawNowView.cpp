@@ -38,14 +38,15 @@ END_MESSAGE_MAP()
 CDrawNowView::CDrawNowView() noexcept
 {
 	// TODO: 在此处添加构造代码
-
-	m_PenSize = 1;
+	m_PenSize = 5;
 	m_PenColor = RGB(0, 0, 0);
 	m_BrushColor = RGB(0, 0, 0);
 	m_PointBegin = CPoint(0, 0);
 	m_PointEnd = CPoint(0, 0);
-	m_DrawType = DrawType::Rectangle;
-
+	m_DrawType = DrawType::Ellips;
+	CPen TempPen;
+	TempPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
+	m_Pen = &TempPen;
 }
 
 CDrawNowView::~CDrawNowView()
@@ -121,6 +122,10 @@ void CDrawNowView::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	m_PointBegin = m_PointEnd = point;
 	CClientDC dc(this);
+	CPen m_NewPen;
+	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
+	m_Pen = dc.SelectObject(&m_NewPen);
+
 	switch (m_DrawType)  {
 	case DrawType::Point :
 	case DrawType::LineSegment:
@@ -138,6 +143,9 @@ void CDrawNowView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	CClientDC dc(this);
+	CPen m_NewPen;
+	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
+	m_Pen = dc.SelectObject(&m_NewPen);
 	switch (m_DrawType) {
 	case DrawType::Point:
 		break;
@@ -148,13 +156,24 @@ void CDrawNowView::OnLButtonUp(UINT nFlags, CPoint point)
 		break;
 	case DrawType::Rectangle: {
 		dc.SetROP2(R2_COPYPEN); // 异或的方式清除上次画笔
+		dc.SelectStockObject(NULL_BRUSH);
 		CRect rectTmp2(m_PointBegin, point);
 		dc.Rectangle(rectTmp2);
+		break;
+	}
+	case DrawType::Ellips: {
+		dc.SetROP2(R2_COPYPEN);
+		//dc.SelectStockObject(NULL_BRUSH);
+		CRect rectTmp2(m_PointBegin, point);
+		dc.Ellipse(rectTmp2);
+		m_PointEnd = point;
 		break;
 	}
 	default:
 		break;
 	}
+
+	dc.SelectObject(&m_Pen); //将笔放回
 
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -164,6 +183,10 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	CClientDC dc(this);
+	CPen m_NewPen;
+	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
+	m_Pen = dc.SelectObject(&m_NewPen);
+	
 	if (nFlags & MK_LBUTTON) {
 		switch (m_DrawType) {
 		case DrawType::LineSegment:
@@ -184,6 +207,18 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 			//dc.SetROP2(R2_COPYPEN);
 			CRect rectTmp2(m_PointBegin, point);
 			dc.Rectangle(rectTmp2);
+			m_PointEnd = point;
+			break;
+		}
+		case DrawType::Ellips: {
+			dc.SetROP2(R2_NOTXORPEN); // 异或的方式清除上次画笔
+			dc.MoveTo(m_PointBegin);
+			CRect rectTmp1(m_PointBegin, m_PointEnd);
+			dc.Ellipse(rectTmp1);
+			// 画本次图形
+			//dc.SetROP2(R2_COPYPEN);
+			CRect rectTmp2(m_PointBegin, point);
+			dc.Ellipse(rectTmp2);
 			m_PointEnd = point;
 			break;
 		}

@@ -17,6 +17,7 @@ public:
 
 // 操作
 public:
+	CPen * m_Pen;
 	int m_PenSize;//画笔粗细
 	COLORREF m_PenColor, m_BrushColor;//笔刷颜色。填充颜色
 	CPoint m_PointBegin, m_PointEnd;//绘图起点，绘图终点
