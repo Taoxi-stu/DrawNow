@@ -21,6 +21,8 @@ public:
 	int m_PenSize;//画笔粗细
 	COLORREF m_PenColor, m_BrushColor;//笔刷颜色。填充颜色
 	CPoint m_PointBegin, m_PointEnd;//绘图起点，绘图终点
+	CPoint m_PointPolyOrigin;
+	BOOL m_PolyInitFlag;
 	enum class DrawType {
 		Point, LineSegment, Circle, Rectangle, Polygen, Ellips, FreeFrom
 	}m_DrawType;
@@ -54,6 +56,7 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSetting();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // DrawNowView.cpp 中的调试版本
