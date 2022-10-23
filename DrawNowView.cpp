@@ -239,7 +239,7 @@ void CDrawNowView::OnSetting()
 	// TODO: 在此添加命令处理程序代码
 	if (m_CDlgSet == nullptr) {
 		m_CDlgSet = new CSetting();
-		m_CDlgSet->m_PenSize = m_PenSize;
+		//m_CDlgSet->m_PenSize = m_PenSize;
 		m_CDlgSet->Create(IDD_Setting, this);
 		m_CDlgSet->ShowWindow(SW_SHOW);
 	}
@@ -259,9 +259,24 @@ void CDrawNowView::OnSetFocus(CWnd* pOldWnd)
 
 	// TODO: 在此处添加消息处理程序代码
 	if (m_CDlgSet != nullptr) {
+		m_CDlgSet->UpdateData(1);
 		m_CDlgSet->m_PenSize = _ttoi(m_CDlgSet-> m_DlgStrPenSize);
 		m_PenSize = m_CDlgSet->m_PenSize;
-		m_CDlgSet->UpdateData(1);
+		switch (m_CDlgSet->m_ListDrawType.GetCurSel()) {
+		case 0:
+			m_DrawType = DrawType::Point;
+			break;
+		case 1:
+			m_DrawType = DrawType::LineSegment;
+			break;
+		case 2:
+			m_DrawType = DrawType::Circle;
+			break;
+		case 3:
+			m_DrawType = DrawType::Rectangle;
+			break;
+		}
+		
 	}
 		
 }

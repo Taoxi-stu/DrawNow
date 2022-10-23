@@ -26,7 +26,7 @@ public:
 	int m_PenSize;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
-//	afx_msg void OnEnChangeEdit1();
-	afx_msg void OnEnChangeEdit1();
-	CListBox m_DrawType;
+	afx_msg void OnCbnSelchangeCombo1();
+	CComboBox m_ListDrawType;
+	virtual BOOL OnInitDialog();
 };
