@@ -24,7 +24,7 @@ public:
 	enum class DrawType {
 		Point, LineSegment, Circle, Rectangle, Polygen, Ellips, FreeFrom
 	}m_DrawType;
-	CSetting m_CDlgSet;
+	CSetting* m_CDlgSet;
 
 // 重写
 public:
@@ -53,6 +53,7 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSetting();
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 };
 
 #ifndef _DEBUG  // DrawNowView.cpp 中的调试版本

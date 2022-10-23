@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CDrawNowView, CView)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_COMMAND(ID_32771, &CDrawNowView::OnSetting)
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 // CDrawNowView 构造/析构
@@ -48,6 +49,7 @@ CDrawNowView::CDrawNowView() noexcept
 	CPen TempPen;
 	TempPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
 	m_Pen = &TempPen;
+	m_CDlgSet = nullptr;
 }
 
 CDrawNowView::~CDrawNowView()
@@ -164,7 +166,7 @@ void CDrawNowView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	case DrawType::Ellips: {
 		dc.SetROP2(R2_COPYPEN);
-		//dc.SelectStockObject(NULL_BRUSH);
+		dc.SelectStockObject(NULL_BRUSH);
 		CRect rectTmp2(m_PointBegin, point);
 		dc.Ellipse(rectTmp2);
 		m_PointEnd = point;
@@ -235,8 +237,31 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 void CDrawNowView::OnSetting()
 {
 	// TODO: 在此添加命令处理程序代码
-	m_CDlgSet.Create(IDD_Setting, this);
-	m_CDlgSet.ShowWindow(SW_SHOW);
-	m_CDlgSet.SetActiveWindow();
+	if (m_CDlgSet == nullptr) {
+		m_CDlgSet = new CSetting();
+		m_CDlgSet->m_PenSize = m_PenSize;
+		m_CDlgSet->Create(IDD_Setting, this);
+		m_CDlgSet->ShowWindow(SW_SHOW);
+	}
+	else {
+		m_CDlgSet->ShowWindow(SW_SHOW);
+		m_CDlgSet->SetActiveWindow();
+	}
+		
 
+
+}
+
+
+void CDrawNowView::OnSetFocus(CWnd* pOldWnd)
+{
+	CView::OnSetFocus(pOldWnd);
+
+	// TODO: 在此处添加消息处理程序代码
+	if (m_CDlgSet != nullptr) {
+		m_CDlgSet->m_PenSize = _ttoi(m_CDlgSet-> m_DlgStrPenSize);
+		m_PenSize = m_CDlgSet->m_PenSize;
+		m_CDlgSet->UpdateData(1);
+	}
+		
 }
