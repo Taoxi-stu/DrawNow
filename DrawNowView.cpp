@@ -281,19 +281,32 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 			m_PointEnd = RealEnd;
 			break;
 		}
+		case DrawType::FreeFrom:
+			dc.SetROP2(R2_COPYPEN);
+			dc.MoveTo(m_PointBegin);
+			dc.LineTo(point);
+			m_PointBegin = point;
+			break;
 		default:
 			break;
 		}
 	}
 	else {
-		if(m_PolyInitFlag == 1 && m_DrawType == DrawType::Polygen){
+		if(m_PolyInitFlag == 1){
+			switch (m_DrawType) {
+			case DrawType::Polygen:
 				dc.SetROP2(R2_NOTXORPEN); // 异或的方式清除上次画笔
 				dc.MoveTo(m_PointBegin);
 				dc.LineTo(m_PointEnd);
 				// 画本次图形
+				//dc.SetROP2(R2_COPYPEN);
 				dc.MoveTo(m_PointBegin);
 				dc.LineTo(point);
 				m_PointEnd = point;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	
@@ -377,6 +390,8 @@ void CDrawNowView::OnRButtonDown(UINT nFlags, CPoint point)
 		dc.LineTo(m_PointBegin);
 
 		m_PolyInitFlag = 0;
+		break;
+	default:
 		break;
 	}
 
