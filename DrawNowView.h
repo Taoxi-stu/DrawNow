@@ -19,7 +19,8 @@ public:
 public:
 	CPen * m_Pen;
 	int m_PenSize;//画笔粗细
-	COLORREF m_PenColor, m_BrushColor;//笔刷颜色。填充颜色
+	COLORREF m_PenColor;//笔刷颜色。填充颜色
+	int m_PenStyle;
 	CPoint m_PointBegin, m_PointEnd;//绘图起点，绘图终点
 	CPoint m_PointPolyOrigin;
 	BOOL m_PolyInitFlag;

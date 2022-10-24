@@ -41,17 +41,17 @@ END_MESSAGE_MAP()
 CDrawNowView::CDrawNowView() noexcept
 {
 	// TODO: 在此处添加构造代码
-	m_PenSize = 5;
+	m_PenSize = 3;
 	m_PenColor = RGB(0, 0, 0);
-	m_BrushColor = RGB(0, 0, 0);
+	m_PenStyle = PS_DOT;
 	m_PointBegin = CPoint(0, 0);
 	m_PointEnd = CPoint(0, 0);
 	m_PointPolyOrigin = CPoint(0, 0);
 	m_PolyInitFlag = 0;
 	m_DrawType = DrawType::LineSegment;
-	CPen TempPen;
-	TempPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
-	m_Pen = &TempPen;
+	
+	m_Pen = nullptr;
+
 	m_CDlgSet = nullptr;
 }
 
@@ -132,20 +132,20 @@ void CDrawNowView::OnLButtonDown(UINT nFlags, CPoint point)
 		m_PointPolyOrigin = point;
 	}
 	CClientDC dc(this);
-	CPen m_NewPen;
-	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
-	m_Pen = dc.SelectObject(&m_NewPen);
+	CPen m_NewPen, *m_OldPen;
+	m_NewPen.CreatePen(m_PenStyle, m_PenSize, m_PenColor);
+	m_OldPen = dc.SelectObject(&m_NewPen);
 
 	switch (m_DrawType)  {
-	//case DrawType::Point :
-	//case DrawType::LineSegment:
-	//case DrawType::Rectangle:
-	//	dc.MoveTo(m_PointBegin);
-	//	dc.LineTo(point);
-	//	break;
+	case DrawType::Point :
+	case DrawType::LineSegment:
+	case DrawType::Rectangle:
+		dc.MoveTo(m_PointBegin);
+		dc.LineTo(point);
+		break;
 
 	}
-
+	dc.SelectObject(&m_OldPen);
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -154,9 +154,12 @@ void CDrawNowView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	CClientDC dc(this);
-	CPen m_NewPen;
-	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
-	m_Pen = dc.SelectObject(&m_NewPen);
+	LOGBRUSH logBrush;
+	logBrush.lbStyle = BS_SOLID;
+	logBrush.lbColor = m_PenColor;
+	CPen m_NewPen, * m_OldPen;
+	m_NewPen.CreatePen(m_PenStyle | PS_GEOMETRIC | PS_ENDCAP_ROUND, m_PenSize, &logBrush);
+	m_OldPen = dc.SelectObject(&m_NewPen);
 	switch (m_DrawType) {
 	case DrawType::Point:
 		break;
@@ -208,8 +211,9 @@ void CDrawNowView::OnLButtonUp(UINT nFlags, CPoint point)
 	default:
 		break;
 	}
+	dc.SelectObject(&m_OldPen);
 
-	dc.SelectObject(&m_Pen); //将笔放回
+	//dc.SelectObject(&m_Pen); //将笔放回
 
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -219,9 +223,12 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	CClientDC dc(this);
-	CPen m_NewPen;
-	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
-	m_Pen = dc.SelectObject(&m_NewPen);
+	LOGBRUSH logBrush;
+	logBrush.lbStyle = BS_SOLID;
+	logBrush.lbColor = m_PenColor;
+	CPen m_NewPen, * m_OldPen;
+	m_NewPen.CreatePen(m_PenStyle | PS_GEOMETRIC | PS_ENDCAP_ROUND, m_PenSize, &logBrush);
+	m_OldPen = dc.SelectObject(&m_NewPen);
 	
 	if (nFlags & MK_LBUTTON) {
 		switch (m_DrawType) {
@@ -262,7 +269,6 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 
 			CPoint RealEnd; //对point进行修正，使其与m_PointBegin围成正方形
 			CSize DiffSize;
-			int distance;
 			dc.MoveTo(m_PointBegin);
 			CRect rectTmp1(m_PointBegin, m_PointEnd);
 			dc.Ellipse(rectTmp1);
@@ -290,6 +296,7 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 		default:
 			break;
 		}
+		
 	}
 	else {
 		if(m_PolyInitFlag == 1){
@@ -309,6 +316,8 @@ void CDrawNowView::OnMouseMove(UINT nFlags, CPoint point)
 			}
 		}
 	}
+	dc.SelectObject(&m_OldPen);
+	
 	
 	CView::OnMouseMove(nFlags, point);
 }
@@ -342,6 +351,8 @@ void CDrawNowView::OnSetFocus(CWnd* pOldWnd)
 		m_CDlgSet->UpdateData(1);
 		m_CDlgSet->m_PenSize = _ttoi(m_CDlgSet-> m_DlgStrPenSize);
 		m_PenSize = m_CDlgSet->m_PenSize;
+		m_PenStyle = m_CDlgSet->m_ListPenStyle.GetCurSel();
+		m_PenColor = m_CDlgSet->m_ListPenColor.GetColor();
 		switch (m_CDlgSet->m_ListDrawType.GetCurSel()) {
 		case 0:
 			m_DrawType = DrawType::Point;
@@ -375,9 +386,12 @@ void CDrawNowView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	CClientDC dc(this);
-	CPen m_NewPen;
-	m_NewPen.CreatePen(PS_SOLID, m_PenSize, m_PenColor);
-	m_Pen = dc.SelectObject(&m_NewPen);
+	LOGBRUSH logBrush;
+	logBrush.lbStyle = BS_SOLID;
+	logBrush.lbColor = m_PenColor;
+	CPen m_NewPen, * m_OldPen;
+	m_NewPen.CreatePen(m_PenStyle | PS_GEOMETRIC | PS_ENDCAP_ROUND, m_PenSize, &logBrush);
+	m_OldPen = dc.SelectObject(&m_NewPen);
 
 	switch (m_DrawType) {
 	case DrawType::Polygen:
@@ -394,7 +408,7 @@ void CDrawNowView::OnRButtonDown(UINT nFlags, CPoint point)
 	default:
 		break;
 	}
-
+	dc.SelectObject(&m_OldPen);
 
 	CView::OnRButtonDown(nFlags, point);
 }

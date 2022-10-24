@@ -5,6 +5,7 @@
 #include "DrawNow.h"
 #include "afxdialogex.h"
 #include "CSetting.h"
+#include "resource.h"
 
 
 // CSetting 对话框
@@ -15,7 +16,7 @@ CSetting::CSetting(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_Setting, pParent)
 	, m_DlgStrPenSize(_T(""))
 {
-	m_PenSize = 5;
+	m_DlgStrPenSize = '3';
 
 }
 
@@ -29,6 +30,8 @@ void CSetting::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT1, m_DlgStrPenSize);
 
 	DDX_Control(pDX, IDC_COMBO1, m_ListDrawType);
+	DDX_Control(pDX, IDC_COMBO2, m_ListPenStyle);
+	DDX_Control(pDX, IDC_MFCCOLORBUTTON2, m_ListPenColor);
 }
 
 
@@ -75,8 +78,11 @@ BOOL CSetting::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	m_ListDrawType.SetCurSel(1);
+	m_ListDrawType.SetCurSel(4);
+	m_ListPenStyle.SetCurSel(1);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
 }
+
+

@@ -10,6 +10,10 @@
 #define IDC_EDIT1                       1000
 #define IDC_LIST1                       1001
 #define IDC_COMBO1                      1002
+#define IDC_COMBO2                      1003
+#define IDC_COMBO3                      1003
+#define IDC_MFCCOLORBUTTON1             1006
+#define IDC_MFCCOLORBUTTON2             1007
 #define ID_32771                        32771
 
 // Next default values for new objects
@@ -18,7 +22,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32772
-#define _APS_NEXT_CONTROL_VALUE         1003
+#define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

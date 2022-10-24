@@ -29,4 +29,6 @@ public:
 	afx_msg void OnCbnSelchangeCombo1();
 	CComboBox m_ListDrawType;
 	virtual BOOL OnInitDialog();
+	CComboBox m_ListPenStyle;
+	CMFCColorButton m_ListPenColor;
 };
