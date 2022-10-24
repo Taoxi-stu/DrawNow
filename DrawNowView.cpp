@@ -347,7 +347,10 @@ void CDrawNowView::OnSetFocus(CWnd* pOldWnd)
 			break;
 		case 5: 
 			m_DrawType = DrawType::Ellips;
+			break;
+		case 6:
 			m_DrawType = DrawType::FreeFrom;
+			break;
 		}
 		
 	}
